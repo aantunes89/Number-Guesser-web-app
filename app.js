@@ -10,7 +10,7 @@ GAME FUNCTION:
 // Game values
 let min = 1 //prompt('Type a number', 1),
     max = 10 //prompt('Type a number', 10),
-    winningNum = 2, //Math.round(Math.random() * max),
+    winningNum = getRandomNum(min, max), //Math.round(Math.random() * max),
     guessesLeft = 3;
 
 // UI Elements
@@ -25,6 +25,13 @@ const game = document.querySelector('#game'),
 minNum.textContent = min;
 maxNum.textContent = max;
 
+// Play again event listener
+game.addEventListener('mousedown', function(e) {
+  if(e.target.className === 'play-again') {
+    window.location.reload();
+  }
+})
+
 // Listen or guess
 guessBtn.addEventListener('click', function(){
   let guess = parseInt(guessInput.value);
@@ -36,21 +43,81 @@ guessBtn.addEventListener('click', function(){
 
   // Check if won
   if(guess === winningNum) {
-    // Disable input
-    guessInput.disabled = true;
-    // Change border color
-    guessInput.style.borderColor = 'green';
-    // Set messsage
-    setMessage(`${winningNum} is correct, YOU WIN!`, 'green')
-  } else {
-    
-  }
+    // Game Over - won :
+    gameOver(true, `${winningNum} is correct, YOU WIN!`);
 
-  // guessInput.value = '';
+  } else {
+    guessesLeft -= 1;
+    console.log(guessesLeft);
+
+    if(guessesLeft === 0) {
+      // Game Over - lost :
+      gameOver(false, `Game Over, you lost. The correct number was ${winningNum}`);
+      
+    } else {
+      // Game continues - answer wrong:      
+      // 1 - Change border color
+      guessInput.style.borderColor = 'red';      
+      // 2 - Clear input
+      guessInput.value = '';
+      //3 - Tell user it's the wrong number
+      setMessage(`${guess} is not correct, ${guessesLeft} guesses left `, 'red');
+      
+    }
+  }
 })
+
+// Game Over
+function gameOver (won, msg) {
+  let color;
+  won === true ? color = 'green' : color = 'red';
+
+  // 1 - Disable input
+  guessInput.disabled = true;
+  // 2 - Change border color
+  guessInput.style.borderColor = color;
+  // 3 - Set messsage
+  setMessage(msg, color);
+
+  // Play again?
+  guessBtn.value = 'Play Again';
+  guessBtn.className += 'play-again';
+}
+
+// Get Winning Number
+function getRandomNum(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)+ min);
+}
 
 // Set message
 function setMessage(msg, color) {
   message.style.color = color;
   message.textContent = msg;
 }
+
+
+
+
+// function playAgain() {
+//   guessesLeft = 3;
+//   guessInput.disabled = false;
+//   message.textContent = '';
+// }
+
+
+
+// } else if(guessesLeft <= 1){
+//   setMessage(`YOU LOSE!`, 'red');
+//   guessInput.disabled = true;
+//   guessBtn.value = 'Play Again';
+//   guessBtn.addEventListener('click', playAgain);
+//   guessInput.value = '';
+//   guessInput.placeholder = '';
+// } else {
+//   setMessage(`Wrong number, try again!`, 'red');
+//   guessesLeft -= 1;
+//   console.log(guessesLeft);
+//   guessInput.value = '';
+// }
+
+// guessInput.value = '';
